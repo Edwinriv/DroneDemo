@@ -1,9 +1,9 @@
 import socket
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad, pad
+from Crypto.Random import get_random_bytes
 
 KEY = b'ThisIsASecretKey123'[:16]
-IV = b'ThisIsAnInitVect'[:16]
 
 HOST = "127.0.0.1"
 PORT = 65432
@@ -21,10 +21,11 @@ while True:
     data = conn.recv(1024)
     if not data:
         break
-
+    IV = data[:16]
+    cipthertext = data[16:]
     #decrypt message
     cipher = AES.new(KEY, AES.MODE_CBC, IV)
-    decrypted_data = unpad(cipher.decrypt(data), AES.block_size)
+    decrypted_data = unpad(cipher.decrypt(cipthertext), AES.block_size)
     command = decrypted_data.decode("utf-8")
     print(f" Receive command: {command}")
 
@@ -35,9 +36,12 @@ while True:
     else:
         response = f"unknown command: {command}"
 
-    cipher_encrypt = AES.new(KEY, AES.MODE_CBC, IV)
+    #encrypt response
+    response_IV = get_random_bytes(16)
+    cipher_encrypt = AES.new(KEY, AES.MODE_CBC, response_IV)
     encrypted_data = cipher_encrypt.encrypt(pad(response.encode("utf-8"), AES.block_size))
-    print(f"\nEncrypted data:{encrypted_data}\n")
-    conn.sendall(encrypted_data)
+    responde_packet = response_IV + encrypted_data
+    print(f"\nEncrypted data:{responde_packet}\n")
+    conn.sendall(responde_packet)
 
 conn.close()
