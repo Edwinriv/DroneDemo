@@ -12,7 +12,9 @@ This is a **prototype project** designed to demonstrate understanding of:
 
 ## Current Features
 - TCP socket server that listens for incoming commands
-- AES-CBC encrypted communication using a fixed key and random IV
+- Secure client-server communication using **ECDH** key agreenment
+- Session key derivation using **HKDF (SHA-256)**
+- Encrypted command and response messages using **AES-GCM**
 - Supports commands:
   - `takeoff` → simulates drone taking off
   - `land` → simulates drone landing
@@ -20,9 +22,6 @@ This is a **prototype project** designed to demonstrate understanding of:
 - Sends encrypted responses back to the client
 
 ## Next Updates
-- Use **random IV per message** for secure encryption (done)
-- Upgrade to **AES-GCM** for message integrity
-- Implement **RSA key exchange** for session keys
 - Integrate **Microsoft AirSim** to simulate real drone movement
 - Add **intrusion detection** for suspicious commands
 - Optional: Build a **Flask dashboard** to control the drone visually
